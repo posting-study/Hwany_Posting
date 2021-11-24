@@ -1,0 +1,22 @@
+# Hwany-s_CS
+
+## 2021-11-06 스터디 <br/>
+1. 네트워크 시작! <br/> 
+https://hwanywillbe.tistory.com/89?category=900350
+## 2021-11-9 스터디 <br/>
+1. 네트워크 모델 <br/> 
+https://hwanywillbe.tistory.com/90
+## 2021-11-12 스터디 <br/>
+1. 네트워크 기술 <br/> 
+https://hwanywillbe.tistory.com/91?category=900350
+## 2021-11-17 스터디 <br/>
+1. 데이터 전송의 기초 <br/> 
+https://hwanywillbe.tistory.com/92?category=900350
+## 2021-11-18 스터디 <br/>
+1. MAC 계층 <br/> 
+https://hwanywillbe.tistory.com/93
+
+## 2021-11-24터디 <br/>
+1. 데이터 링크 계층 <br/> 
+https://hwanywillbe.tistory.com/102
+
