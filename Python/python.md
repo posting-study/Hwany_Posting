@@ -1,7 +1,7 @@
 # Hwany-s_Python
 파이썬 공부를 하면서 정리한 글 들 입니다!<br/>
 <br/>
-## 2021-09-12 스터디 업로드 <br/>
+## 스터디 업로드 <br/>
 
 1. 2021-9-4 업로드  <br/>
   *파이썬 기초 <br/>
@@ -22,9 +22,6 @@
 1. 2021-9-10 업로드 <br/>
   *파이썬 리스트 <br/>
   https://hwanywillbe.tistory.com/11 <br/>
-  
-  
-## 2021-09-19 스터디 업로드 <br/>
 
 1. 2021-09-12 업로드 <br/>
   *파이썬 for 문 <br/>
@@ -66,10 +63,11 @@
   *파이썬 ASCII 코드 <br/>
   https://hwanywillbe.tistory.com/40?category=888693 <br/>
 
-
-## 2021-10-03 스터디 업로드 <br/>
-
 1. 2021-09-27 업로드 <br/>
   *파이썬 공백을 기준으로 출력 <br/>
   https://hwanywillbe.tistory.com/57?category=888693 <br/>
+
+1. 2021-09-27 업로드 <br/>
+  *리스트+튜플 조합의 정렬 <br/>
+  https://hwanywillbe.tistory.com/109 <br/>
 
