@@ -27,3 +27,7 @@ https://hwanywillbe.tistory.com/106
 ## 2021-12-05 스터디 <br/>
 ### TCP 프로토콜 <br/> 
 https://hwanywillbe.tistory.com/108
+## 2021-12-12 스터디 <br/>
+### 전송계층 <br/> 
+https://hwanywillbe.tistory.com/110?category=900350
+
