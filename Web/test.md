@@ -30,7 +30,7 @@
 <br>
 <br>
 
- <!DOCTYPE html>
+<!DOCTYPE html>
 <!-- 이 문서가 html 5 버전이란걸 명시 -->
 <html>
 <head>
