@@ -122,5 +122,58 @@ property: value;
 <h1>Hello World!</h1>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sit amet lorem sit amet nunc ornare convallis. Pellentesque ac posuere lectus. In eu ipsum et quam finibus fermentum vitae sit amet magna.</p>
 ```
-![](https://user-images.githubusercontent.com/76484900/147253813-66dd5284-202a-43fb-8c97-b9aa99dcbf9d.png)
-마크다운 글자색 변경에 대해서 더 알아보자..
+<br>
+
+### ~~글자색 변경이 지원을 안한다고 하니 이미지로 참고,,참고하자...~~ 🤥
+
+<br>
+
+<p align="center"><img src="https://user-images.githubusercontent.com/76484900/147340783-8ba81882-7407-46a8-8fe2-b7ca070cedd6.png"></p>
+
+
+### 2. Style 속성 이용하기
+
+```html
+
+<h1 style="color: green; text-align: center;">Hello World!</h1>
+
+<p style="color: green; text-align: center;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sit amet lorem sit amet nunc ornare convallis. Pellentesque ac         posuere lectus. In eu ipsum et quam finibus fermentum vitae sit amet magna.</p>
+
+```
+
+<br>
+
+<p align="center"><img src="https://user-images.githubusercontent.com/76484900/147340783-8ba81882-7407-46a8-8fe2-b7ca070cedd6.png"></p>
+
+### 3. 외부 CSS 파일 + link 태그
+
+```css
+/* css/style.css */
+h1 {
+  color: green;
+  text-align: center;
+}
+
+p {
+  font-size: 18px;
+}
+
+```
+
+```html
+<!-- index.html -->
+<link href="css/styles.css" rel="stylesheet">
+
+<h1>Hello World!</h1>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sit amet lorem sit amet nunc ornare convallis. Pellentesque ac posuere lectus. In eu ipsum et quam finibus fermentum vitae sit amet magna.</p>
+
+```
+<p align="center"><img src="https://user-images.githubusercontent.com/76484900/147340783-8ba81882-7407-46a8-8fe2-b7ca070cedd6.png"></p>
+
+> 일반적으로는 외부 CSS 파일에 스타일을 쓰고 HTML 코드에서 `<link>` 태그로 연결해주는 것이 가장 좋은 방식이다.
+> 
+>하지만 조금씩 새로운 스타일을 시도해볼 때에는 간편함을 위해서 `<style>`태그를 쓰는 방법도 있다.
+>
+>또는 style 속성에서 테스트를 하고, 나중에 외부 CSS 파일로 옮기는 방법도 있다
+
+
