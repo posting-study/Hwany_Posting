@@ -26,6 +26,8 @@
  3. 2번이 싫다면 부모에 정렬시키고자 하는 태그와 같은 길이의 `line-height` 속성을 부여하고 정렬시키고자 하는 태그에는 `line-height:normal;`을 부여한다. *`상속`됨을 막기 위해!*
 <br>
 
+<p align="center"><img width= "75%" src="https://user-images.githubusercontent.com/76484900/147382895-59a0698e-0651-4d3d-b829-2209d6a51088.PNG"></p>
+
 #### 2. `flex`
 나중에 또 추가할게용
 
