@@ -136,13 +136,13 @@ h1:hover {
 	color: blue;  
 }
 ```
-부모 컴포넌트의 폰트색만 바꾸었을 뿐인데 자식 컴포넌트인 h1과 p의 폰트 색 또한 바뀌었다.
+부모 컴포넌트의 폰트색만 바꾸었을 뿐인데 자식 컴포넌트인 h1과 p의 폰트 색 또한 바뀌었다. <br>
 
 그 이유는 부모의 속성이 자식에게 `상속(inherit)`됐기 때문!
 <br>
 
 
-**상속되는 속성들**
+**상속되는 속성들** <br>
 🙋‍♂️`color` `font-family` `font-size` `font-weight` `line-height` `list-stlye` `text-align` `visibility` `...`
 
 하지만 특정 태그, 예를 들면 `<a>` 태그는 상속되지 않는데 이때 해당 속성값에 `inherit`를 쓰면 된다.
