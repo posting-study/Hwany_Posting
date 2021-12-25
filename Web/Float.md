@@ -105,8 +105,12 @@ div {
 </html>
 ```
 
-<p align ="center"><img width="25%" src="https://user-images.githubusercontent.com/76484900/147386898-9b6fc039-2be5-4df9-b3f4-e697cd28b003.png"></p>
+<p align ="center"><img width="65%" src="https://user-images.githubusercontent.com/76484900/147387352-5dbd83a7-3666-4138-a634-a1de04efe3c4.PNG"></p>
 
+<br>
+<br>
+
+---
 
 ### clear 속성🚙
 ```css
