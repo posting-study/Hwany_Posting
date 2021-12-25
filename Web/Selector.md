@@ -195,6 +195,7 @@ h1 {
  3. `class`, `attribute`, `psedu-class`의 수
  4. `요소`가 많은 수
 
-<그림>
+<p align="center" width="70%"><img src="https://user-images.githubusercontent.com/76484900/147382333-9c87b67b-a006-41ac-8637-deb671edc86e.PNG"/>
+</p>
 
 
