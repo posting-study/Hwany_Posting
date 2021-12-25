@@ -21,8 +21,12 @@
 }
 ```
 
-<사진>
+<p align ="center"><img width="25%" src="https://user-images.githubusercontent.com/76484900/147386898-9b6fc039-2be5-4df9-b3f4-e697cd28b003.png"></p>
 
+<br>
+<br>
+
+---
 
 ### multi float🚕
 
@@ -100,7 +104,9 @@ div {
   </body>
 </html>
 ```
-<사진>
+
+<p align ="center"><img width="25%" src="https://user-images.githubusercontent.com/76484900/147386898-9b6fc039-2be5-4df9-b3f4-e697cd28b003.png"></p>
+
 
 ### clear 속성🚙
 ```css
