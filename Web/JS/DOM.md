@@ -31,7 +31,8 @@ window 객체는 **브라우저 창을 대변**하면서 자바스크립트에�
 >dir은 파라미터 객체의 속성에 더 중점을 두어 객체 형태로 출력
 
 ## DOM Tree🌲
-사진 1
+
+<p align = "center"><img width = "75%" src="https://user-images.githubusercontent.com/76484900/147827698-76691d93-019e-42ae-87ba-c734d38823d0.PNG"></p>
 
 HTML의 계층 구조는 DOM에서도 반영되는데 이러한 계층구조를 나무에 비유해서 `DOM 트리`라고 부른다.
 
