@@ -1,43 +1,47 @@
 # DOM
 
-## window 객체
+## window 객체💻
 window 객체는 **브라우저 창을 대변**하면서 자바스크립트에서 **최상단**에 존재하는 객체이다
 
 자바스크립트 코드 어느 곳에서나 **항상 접근**할 수 있는 객체이기 때문에 전역 객체, 영어로는 `Global Object`라고 부른다.
 
-어떤 프로퍼티나 메소드를 사용하든 결국 전역 객체 내부의 것이기 때문에 앞에 window.을 생략가능하다
+<br>
 
->**window 객체 MDN**
+어떤 프로퍼티나 메소드를 사용하든 결국 전역 객체 내부의 것이기 때문에 앞에 **window.** 을 생략가능하다
+
+>**window 객체 MDN🖍**
 >https://developer.mozilla.org/ko/docs/Web/API/Window 
 
 
-## DOM(Document Object Model)
+## DOM(Document Object Model)🗂
 
 
 간단하게 표현하면 웹 페이지에 나타나는 **HTML 문서 전체를 `객체`로 표현한 것**
 
-이때 각 객체를 `노드(Node)`라는 용어로 표현하고, 태그는 요소 노드, 문자는 텍스트 노드로 구분 한다.
+이때 각 객체를 `노드(Node)`라는 용어로 표현하고, **태그는 요소 노드, 문자는 텍스트 노드**로 구분 한다.
 
-`document` 객체로 접근시 웹페이지 요소에 접근가능.
+<br>
 
-*DOM을활용하면 js로 html 태그들을 객체로 다룰수 있다!*
+💁‍♂️`document` 객체로 접근시 웹페이지 요소에 접근가능.
+
+💁‍♂️*DOM을활용하면 js로 html 태그들을 객체로 다룰수 있다!*
 
 >**log VS dir**
 >log는 파라미터의 값에 더 중점을 두어 대상을 HTML 형태로  출력
 >dir은 파라미터 객체의 속성에 더 중점을 두어 객체 형태로 출력
 
-## DOM Tree
+## DOM Tree🌲
 사진 1
 
 HTML의 계층 구조는 DOM에서도 반영되는데 이러한 계층구조를 나무에 비유해서 `DOM 트리`라고 부른다.
 
-각 노드 간의 관계는 **부모, 자식, 형제**라는 용어로 표현.
+💁‍♂️각 노드 간의 관계는 **부모, 자식, 형제**라는 용어로 표현.
 
-`요소노드`와 `텍스트 노드`로 구성된다.
+💁‍♂️`요소노드`와 `텍스트 노드`로 구성된다.
 
 **텍스트노드는 요소노드의 자식노드이고 스스로 자식노드를 가질 수 없는 노드이다.**
 
-## DOM 트리 이동하기
+## DOM 트리 이동하기🌪
 ### 노드 선택하기
 ```js
 const element = document.querySelector("#element");
@@ -68,7 +72,8 @@ element.nextElementSibling
 
 1. element.innerHTML
 요소 노드 **내부의 HTML 코드**를 문자열로 리턴해 줍니다. 
-_내부에 있는 줄 바꿈이나 들여쓰기 모두 포함_
+
+💁‍♂️ _내부에 있는 줄 바꿈이나 들여쓰기 모두 포함_
 
 ```js
 const myTag = document.querySelector('#list-1');
@@ -80,7 +85,8 @@ myTag.innerHTML
 
 2. element.outerHTML
 요소 노드 자체의 전체적인 HTML 코드를 문자열로 리턴해줍니다. 
-_내부에 있는 줄 바꿈이나 들여쓰기 모두 포함_
+
+💁‍♂️ _내부에 있는 줄 바꿈이나 들여쓰기 모두 포함_
 
 ```js
 const myTag = document.querySelector('#list-1');
@@ -97,7 +103,8 @@ myTag.outerHTML = '<ul id="new-list"><li>Exotic</li></ul>'
 
 3. element.textContent
 요소 안의 내용들 중에서 HTML 태그 부분은 제외하고 `텍스트`만 가져온다.
-_내부에 있는 줄 바꿈이나 들여쓰기 모두 포함_
+
+💁‍♂️ _내부에 있는 줄 바꿈이나 들여쓰기 모두 포함_
 
 ```js
 const myTag = document.querySelector('#list-1');
@@ -106,6 +113,8 @@ const myTag = document.querySelector('#list-1');
 console.log(myTag.textContent);
 ```
 하지만 textContent는 말그대로 텍스트만 다루기 때문에, **특수문자도 그냥 텍스트**로 처리한다!
+
+<br>
 
 ## 요소노드 만들어서 추가하기
 ```html
@@ -135,6 +144,10 @@ console.log(myTag.textContent);
 </html>
 </html>
 ```
+<br>
+<br>
+
+---
 
 ```js
 const today = document.querySelector('#today');
@@ -172,9 +185,10 @@ next.textContent = '다음';
 tomorrow.after(next);
 ```
 
+<br>
 
 
-## 요소 삭제하기
+## 요소 삭제하기🌬
 
 
 ```js
@@ -193,14 +207,15 @@ tomorrow.children[2].before(today.children[1]);
 tomorrow.lastElementChild.before(today.children[1]);
 ```
 
-## HTML 속성 다루기
+## HTML 속성 다루기🌊
 
-대부분의 HTML 속성은 DOM 객체의 프로퍼티로 변환이 된다.
+대부분의 HTML 속성은 **DOM 객체의 프로퍼티**로 변환이 된다.
 하지만, 표준 속성이 아닌 경우에는 프로퍼티로 변환이 안 되는데, 아래 메소드를 활용하면 표준이 아닌 HTML 속성들도 다룰 수 있다.
 
-- 속성에 접근하기: element.getAttribute('속성')
-- 속성 추가(수정)하기: element.setAttribute('속성', '값')
-- 속성 제거하기: element.removeAttribute('속성')
+- 속성에 접근하기: `element.getAttribute('속성')`
+- 속성 추가(수정)하기: `element.setAttribute('속성', '값')`
+- 속성 제거하기: `element.removeAttribute('속성')`
+<br>
 
 ```js
 // HTML 속성 (HTML attribute)
@@ -233,7 +248,7 @@ console.log(link);
 console.log(link.href);
 console.log(tomorrow.href);
 ```
-## 스타일 다루기
+## 스타일 다루기🎨
 
 
 ```js
@@ -264,15 +279,16 @@ today.children[2].style.backgroundColor = '#DDDDDD';
 //스타일을 인라인으로 작성하기에 불필요한 작업이 진행될 수 있어서 사용을 잘 안한다.
 ```
 
-## 비표준속성
+## 비표준속성🧩
 
 ### dataset
 
-비표준 속성을 사용하기 위해 미리 약속된 방식이 존재하는데, 바로 `data-*` 속성이다!
+비표준 속성을 사용하기 위해 미리 약속된 방식이 존재하는데, 바로 **`data-*`** 속성이다!
 
 data-로 시작하는 속성은 모두 dataset이라는 프로퍼티에 저장되는데, 예를 들어서 `data-status`라는 속성이 있다면, `element.dataset.status`라는 프로퍼티에 접근해서 그 값을 가져올 수 있는 것
+<br>
+- **HTML**
 
-그래서 본문의 코드도 아래와 같이 고치고,
 ```html
 <!DOCTYPE html>
 <html lang="ko">
@@ -297,6 +313,10 @@ data-로 시작하는 속성은 모두 dataset이라는 프로퍼티에 저장�
 
 </html>
 ```
+<br>
+<br>
+
+- **CSS** 
 
 ```css
 [data-status] {
@@ -318,7 +338,21 @@ data-로 시작하는 속성은 모두 dataset이라는 프로퍼티에 저장�
   color: #FFFFFF;
 }
 ```
+
+<br>
+<br>
+
+- **JS** 
 ```js
+
+const fields = document.querySelectorAll('[data-field]'); 
+
+const task = { 
+	title: '코드 에디터 개발', 
+	manager: 'CastleRing, Raccoon Lee', 
+	status: '', 
+	};
+
 for (let tag of fields) {
   const field = tag.dataset.field;
   tag.textContent = task[field];
@@ -334,7 +368,7 @@ for (let btn of btns) {
 }
 ```
 
-
+---
 
 
 
