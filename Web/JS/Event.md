@@ -216,7 +216,7 @@ for (let item of items) {
 
 ## 이벤트 캡처링📸
 
-사진1
+<p align="center"><img src="https://user-images.githubusercontent.com/76484900/147847965-07a55104-d334-4718-8e7d-2202e9a9eb68.PNG" width="75%"></p>
 
 1. 이벤트가 발생하면 가장 먼저 window 객체에서부터 target 까지 이벤트 전파가 일어난다. **(캡쳐링 단계)**
 2. 그리고 나서 타깃에 도달하면 타깃에 등록된 이벤트 핸들러가 동작하고 **(타깃 단계)**
