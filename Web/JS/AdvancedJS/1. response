@@ -1,6 +1,9 @@
+```js
 fetch('https://www.google.com')
   .then((response) => response.text())
   .then((result) => { console.log(result); });
+
+```
 
 이전 영상에서는 fetch 함수로 리퀘스트를 보내고, 리스폰스를 받아서 그 내용을 출력해봤습니다. fetch 함수의 실행 원리를 다시 정리하자면,
 
@@ -10,18 +13,24 @@ fetch 함수는 어떤 객체를 리턴하는데(Promise 객체, 챕터 3에서 
 그런데 예리한 분들은 이 코드를 보고 이런 궁금증이 생겼을 수도 있습니다.
 
 위 코드처럼 적지 않고 그냥
-
+```js
 fetch('https://www.google.com')
   .then((response) => { console.log(response); });
+
+```
 
 '이렇게 코드를 적어도 리스폰스의 내용을 출력할 수 있지 않나요?' 라는 의문을 가지셨을 수도 있는데요.
 
 사실 이 response 파라미터로는 리스폰스의 실제 내용 자체가 넘어오는 게 아닙니다. response 파라미터에는, 리스폰스에 관한 각종 부가 정보들과, 실제 내용을 함께 갖고 있는 하나의 객체(object)가 넘어오는데요. 그래서 우리가 원하는 리스폰스의 실제 내용을 보려면,
 
+```js
 fetch('https://www.google.com')
   .then((response) => response.text())
   .then((result) => { console.log(result); });
 
+```
+
 이렇게 reponse 객체의 text라는 메소드를 호출해야 합니다. 그리고 이 text 메소드의 리턴값이 바로 리스폰스의 실제 내용입니다.(사실은 실제 내용을 갖고 있는 Promise 객체이지만, 더 자세한 내용은 챕터 3에서 알아봅시다)
 
 왜 바로 response를 출력하지 않았는지 아시겠죠? 사실 이 코드를 완벽하게 해석하려면 좀 더 많은 내용을 알아야 합니다. 그런 내용은 곧 챕터 3에서 배울 거니까 일단은 이런 식으로 리스폰스를 받아서 처리할 수 있다는 정도만 기억하고 갑시다.
+ 
