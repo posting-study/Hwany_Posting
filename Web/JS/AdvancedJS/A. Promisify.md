@@ -1,72 +1,42 @@
-이전 영상에서는 직접 Promise 객체를 만드는 방법을 배웠습니다. 그럼 언제 이런 식으로 Promise 객체를 직접 만들게 되는 걸까요? 다양한 경우들이 있지만, 전통적인 형식의 비동기 실행 함수를 사용하는 코드를, Promise 기반의 코드로 변환하기 위해 Promise 객체를 직접 만드는 경우가 많습니다. 각각의 예시를 통해 이게 무슨 말인지 이해해봅시다.
+# Promisify
 
-1. setTimeout 함수 예시
-예를 들어 이런 wait이라는 함수가 있다고 합시다.
+## Promise 객체를 직접 만든다?🧐
 
-function wait(text, milliseconds) {
-  setTimeout(() => text, milliseconds);
-}
-wait 함수는 특정 밀리세컨즈만큼 시간이 지난 후에 text 파라미터로 전달받은 값을 리턴하는 함수입니다. 지금 보이는 setTimeout 함수는 이전에 '알아야하는 비동기 실행 함수들' 노트에서 배웠었죠? 이 wait 함수를 Promise Chaining 코드에서 사용해볼게요.
+Promise 객체를 직접 만드는 이유는 전통적인 형식의 비동기 실행 함수를 Promise 기반의 코드로 변환하기 위해서이다.
 
-fetch('https://jsonplaceholder.typicode.com/users')
-  .then((response) => response.text())
-  .then((result) => { console.log(result); });
-바로 이 Promise Chaining 코드에 wait 함수를 추가해볼 건데요. 이렇게 써보겠습니다.
+<br>
 
+**1. setTimeout 함수 예시**
+```js
+// traditional
 function wait(text, milliseconds) {
   setTimeout(() => text, milliseconds);
 }
 
 fetch('https://jsonplaceholder.typicode.com/users')
   .then((response) => response.text())
-  .then((result) => wait(`${result} by Codeit`, 2000)) // 2초 후에 리스폰스의 내용 뒤에 'by Codeit' 추가하고 리턴
+  .then((result) => wait(`${result} by Hwany`, 2000)) // 2초 후에 리턴이 될까?
   .then((result) => { console.log(result); });
-기존 코드에 두 번째 then 메소드를 추가하고, 그 안에서 wait 함수를 호출했습니다. 이렇게 쓰면 2초 후에 리스폰스의 내용 뒤에 by Codeit이라는 문구를 붙여서 출력될 것 같은데요. 정말 그렇게 되는지 확인해봅시다.
 
-코드를 실행해보면,
+```
+
+<br>
+
+🙍‍♂️ 이런식으로 코드를 연결하면 result 값으로 undefined가 출력된다. <br>
+
+**🙋‍♂️ wait 함수는 단지 setTimeout 함수를 실행시키는 함수**일 뿐 리턴값이 없기 때문이다. <br>
+
+🙆‍♂️ setTimeout 함수 안의 콜백이 2초 후에 리턴하는 text는, wait 함수의 리턴값이 아니다. <br>
+
+💁‍♂️ setTimeout 함수는 비동기 실행 함수인데 Promise Chaining 안에서는 그대로 사용할 수 없다. <br>
+
+🤷‍♂️ 따라서 Promise객체를 생성하는 방향으로 wait 함수를 수정해주어야 한다. <br>
 
 
+<br>
 
-리스폰스의 내용과 by Codeit이 출력되지 않았습니다. 그 대신 undefined가 출력되었는데요.
-
-왜 그런 걸까요? 
-그 이유는 바로 wait 함수에 있습니다.
-
-function wait(text, milliseconds) {
-  setTimeout(() => text, milliseconds);
-}
-이 wait 함수는 내부에서 setTimeout 함수를 호출합니다. 그리고 setTimeout 함수의 첫 번째 파라미터로 들어간 콜백이 2초 후에 text를 리턴하죠. 그런데 여기서 혼동하면 안 되는 것은 wait 함수가
-
-...
-  .then((result) => { return wait(`${result} by Codeit`, 2000); })
-...
-이 두 번째 then 메소드 안의 콜백에서 실행될 때,
-
-wait 함수는 setTimeout 함수를 실행할 뿐 아무것도 리턴하지 않는다는 사실입니다. 
-setTimeout 함수 안의 콜백이 2초 후에 리턴하는 text는, wait 함수의 리턴값이 아닙니다.
-
-이 사실에 유의해야 하는데요. wait 함수는 단지 setTimeout 함수를 실행하고 아무것도 리턴하지 않는 함수일 뿐입니다. 그리고 자바스크립트에서는 이전에 배운대로 함수에서 아무것도 리턴하지 않으면 undefined를 리턴하는 것으로 간주하기 때문에 wait 함수의 리턴값은 undefined입니다.
-
-따라서 세 번째 then 메소드의 콜백으로 undefined가 넘어가고, 그래서 위 이미지에서 보이는 것처럼 undefined가 출력된 겁니다.
-
-setTimeout은 비동기 실행되는 함수인데요. Promise Chaining 안에서 이렇게 비동기 실행되는 함수를 바로 사용하면, 나중에 실행되는 부분의 리턴값(여기서는 text)를 Promise Chain에서 사용할 수 없게 됩니다.
-
-이 문제를 해결하려면 이전 영상에서 배웠던 Promise 객체를 직접 생성하는 방법을 사용하면 됩니다. wait 함수를 이렇게 수정해볼게요.
-
-// function wait(text, milliseconds) {
-//   setTimeout(() => text, milliseconds);
-// }
-
-function wait(text, milliseconds) {
-  const p = new Promise((resolve, reject) => {
-    setTimeout(() => { resolve(text); }, 2000);
-  });
-  return p;
-}
-지금 wait 함수 안에서 Promise 객체를 직접 생성했고, executor 함수 안에서 setTimeout 함수를 호출했습니다. 그리고 setTimeout 함수 안의 콜백에서 resolve 함수를 호출하는데 이 때 그 아규먼트로 text를 넣었습니다. 그렇다면 Promise 객체 p는 2초 후에 fulfilled 상태가 될 것이고, 그 작업 성공 결과는 파라미터 text의 값이 될 될 것입니다. wait 함수는 이제 Promise 객체 p를 리턴합니다.
-
-자, 이 상태에서 코드를 다시 실행해보면
-
+```js
+// Promisify - 비동기 함수를 Promise 객체로 감싸는 것
 function wait(text, milliseconds) {
   const p = new Promise((resolve, reject) => {
     setTimeout(() => { resolve(text); }, 2000);
@@ -76,25 +46,15 @@ function wait(text, milliseconds) {
 
 fetch('https://jsonplaceholder.typicode.com/users')
   .then((response) => response.text())
-  .then((result) => wait(`${result} by Codeit`, 2000)) // 2초 후에 리스폰스의 내용 뒤에 'by Codeit' 추가하고 리턴
+  .then((result) => wait(`${result} by Hwany`, 2000)) // 2초 후에 리턴이 될까?
   .then((result) => { console.log(result); });
+```
+<br>
 
+**2. 콜백 헬(callback hell)과 Promise**
 
-이번에는 약 2초 후에 리스폰스의 내용이 잘 출력되고,
-
-
-
-리스폰스의 내용 맨 마지막에는 by Codeit이라는 문구가 잘 붙어서 출력되는 것을 알 수 있습니다.
-
-방금처럼 기존의 비동기 실행 함수(여기서는 setTimeout)의 콜백이 리턴하는 값을 Promise Chain에서 사용하고 싶다면, 해당 함수를 감싸서 Promise 객체를 직접 생성하는 코드를 작성해야 합니다. 그리고 그 Promise 객체를 리턴해야 방금처럼 Promise Chain에서 해당 리턴값을 받아서 사용할 수 있습니다.
-
-이렇게 전통적인 형식의 비동기 실행 함수를 Promise 객체로 감싸서 그 Promise 객체를 리턴하는 형식으로 만드는 작업을 Promisify(프로미스화하다)라고 하는데요. 앞으로도 이 Promisify라는 용어를 사용하겠습니다. 계속 내용을 읽어봅시다.
-
-2. 콜백 헬(callback hell)과 Promise
-이번에는 Promisify의 또 다른 예시를 보겠습니다. 그런데 이번에는 브라우저가 아니라 조금 다른 환경에서의 코드를 볼 건데요. 바로 Node.js라고 하는 환경입니다. 오늘날 자바스크립트가 실행되는 환경에는 웹 브라우저뿐만 아니라 Node.js라고 하는 것도 있습니다. 이 Node.js는 오늘날 자바스크립트를 서버에서도 실행할 수 있게 해주는 또 다른 '자바스크립트 실행 환경'인데요. 이 Node.js에서는 브라우저에서와는 또 다른 비동기 함수들이 제공됩니다. (Node.js가 뭔지 더 궁금하신 분들은 이 영상을 참고하세요.)
-
-Node.js에는 다음과 같이 특정 파일의 내용을 읽기 위해 사용되는 readFile이라는 비동기 실행 메소드가 있습니다.
-
+```js
+// env = Node.js
 fs.readFile('file1.txt', 'utf8', (error, data) => {
   if (err) {
     console.log(err);
@@ -102,28 +62,12 @@ fs.readFile('file1.txt', 'utf8', (error, data) => {
     console.log(data);
   }
 });
-여기서 fs는 readFile 메소드를 가진 객체로, 파일에 관한 기능들을 갖고 있습니다. 일단 여기서 당장 중요한 내용은 아니니까 readFile 메소드에만 집중합시다. readFile 메소드는 첫 번째 파라미터로 파일의 이름, 두 번째 파라미터로 파일 해석 기준(인코딩 기준), 세 번째 파라미터로 콜백을 받는데요. readFile 함수는 파일을 읽다가 에러가 발생하면 콜백의 첫 번째 파라미터(error)에, 해당 에러 객체를 전달하고 콜백을 실행합니다. 만약 파일을 정상적으로 다 읽었으면 콜백의 두 번째 파라미터(data)에, 읽어들인 파일 내용을 전달하고 콜백을 실행하는데요.
+```
 
-이 readFile 메소드도, 콜백을 파라미터에 바로 넣는 비동기 실행 함수라는 점에서 setTimeout 함수, addEventListener 메소드와 비슷합니다. 그런데 이런 형식의 함수(또는 메소드)들은 한 가지 단점이 있다고 했었죠?(참고) 그건 바로 콜백 헬(callback hell) 문제입니다. 예를 들어, 위 코드에서 이제 file1.txt 파일의 내용을 출력하고 나서 그 다음에 file2.txt라는 파일의 내용을 또 출력해야한다고 해봅시다. 그럼 코드가 이렇게 되겠죠?
+<br>
+만약 파일을 순차적으로 3개를 읽어야 한다고 했을 때
 
-fs.readFile('file1.txt', 'utf8', (error1, data1) => {
-  if (error1) {
-    console.log(error1);
-  } else {
-    console.log(data1);
-    fs.readFile('file2.txt', 'utf8', (error2, data2) => {
-      if (error2) {
-        console.log(error2);
-      } else {
-        console.log(data2);
-      }
-    });
-  }
-});
-이렇게 코드를 쓰면 file1.txt의 내용이 출력되고, 그 다음에 file2.txt의 내용이 출력될 겁니다. 코드가 좀 복잡해졌지만 아직은 읽을만한 것 같습니다. 그런데 이제 그 다음으로 file3.txt의 내용도 출력해야 한다고 해봅시다.
-
-그렇다면
-
+```js
 fs.readFile('file1.txt', 'utf8', (error1, data1) => {
   if (error1) {
     console.log(error1);
@@ -145,14 +89,17 @@ fs.readFile('file1.txt', 'utf8', (error1, data1) => {
     });
   }
 });
-코드가 이렇게 됩니다. 이제 코드를 읽기 너무 어려워지지 않았나요?
+```
 
-콜백을 바로 파라미터에 집어넣는 전통적인 형식의 비동기 실행 함수들은 이런 문제가 있습니다. 바로 순차적으로 비동기 실행 함수들을 실행하려고 하면 콜백 안에 또 콜백이 있고, 그 안에 또 콜백이 있는 콜백 헬(콜백 지옥, callback hell) 현상을 초래하게 된다는 겁니다.
+<br>
 
-실제로 실무에서 개발을 하다 보면 이런 콜백 헬이 아주 큰 문제가 됩니다. 그런데 이런 함수들은 Promise 객체를 리턴하는 것도 아니고 애초에 이런 형식으로 정의되어 있기 때문에 문제를 해결하기가 어려워 보이는데요. 이 문제에 대한 대표적인 해결책이 바로 우리가 배운 Promisify입니다.
+매우 보기 싫어진다. 더러웡! <br>
 
-지금 이 readFile 메소드를 Promisify해보겠습니다.
+🙍‍♂️ 이런 콜백 내부에 다른 콜백이 프랙탈로 들어가 있을 때 이런 현상을 **`콜백지옥`** 이라고 한다. <br>
 
+🙋‍♂️ 이를 **`Promisify`** 로 해결할 수 있다. <br>
+
+```js
 function readFile_promisified(filename) {
   const p = new Promise((resolve, reject) => {
     fs.readFile(filename, 'utf8', (error, data) => {
@@ -165,43 +112,43 @@ function readFile_promisified(filename) {
   });
   return p;
 }
-이런 식으로 readFile_promisified라는 이름의 함수를 정의했는데요. 지금 함수 안에서는 Promise 객체를 직접 생성하고 있습니다. 
-그리고 Promise 객체가 생성될 때 실행되는 executor 함수 안에서는 fs 객체의 readFile 메소를 호출했습니다.
+```
 
-여기서 중요한 것은 작업을 수행하다가 에러가 나면 readFile 함수의 콜백에서
+<br>
 
+🙆‍♂️ `readFile_promisified`라는 함수는 프로미스 객체를 생성했다. <br> 
 
-...                         (error, data) => {
-  if (error) {
-    reject(error); // 에러 발생 시 -> rejected 
-  } else {
-    resolve(data); // 파일 내용 읽기 완료 -> fulfilled 
-  }
-}
-reject 함수를 호출하고, 파일의 내용을 정상적으로 다 읽었을 때는 resolve 함수를 호출한다는 사실입니다. 그리고 reject 함수의 파라미터에는 error 객체를, resolve 함수의 파라미터에는 파일의 내용인 data를 전달했는데요. 이 각각은, 생성된 Promise 객체의 작업 실패 정보 또는 작업 성공 결과가 되겠죠?
+💁‍♂️ 그리고 executor 함수에서 readFile 메소드를 선언해 resolve 와 reject의 행위를 정의했다. <br>
 
-이제 readFile 메소드를 Promisify해서 만든 readFile_promisified 함수를 사용해서 위의 콜백 헬 코드에서 작성했던 내용을 똑같이 작성해봅시다.
-
+🤷‍♂️ `readFile_promisified`로 순차적으로 파일을 읽고 싶으면
+```js
 readFile_promisified('file1.txt')
   .then((data) => { console.log(data); return readFile_promisified('file2.txt'); })
   .then((data) => { console.log(data); return readFile_promisified('file3.txt'); })
   .then((data) => { console.log(data); })
   .catch((error) => { console.log(error); });
-짠! 어떤가요? 코드가 훨씬 깔끔해졌죠? readFile_promisified 함수는 Promise 객체를 리턴하기 때문에 이렇게 자유롭게 Promise Chain 안에서 사용할 수 있습니다.
+```
 
-이렇게 원하는 경우에는 전통적인 형식의 비동기 실행 함수를 Promisify해서 콜백 헬을 방지하고, 가독성 높은 코드를 작성할 수 있습니다.
+<br>
 
-3. Promisify를 하면 안 되는 함수들도 있습니다.
-이제 기존의 전통적인 형식의 비동기 실행 함수도 원하는 경우에는 Promisify해서 콜백 헬을 방지할 수 있다는 것을 알게 되었습니다. 하지만 전통적인 형식의 비동기 실행 함수라고 해서 모두 Promisify해서 사용해도 되는 것은 아닙니다.
+**3. Promisify를 하면 안 되는 함수**
 
-기존의 비동기 실행 함수들 중에서도 그 콜백을 한번만 실행하는 것들(setTimeout, readFile 등)만 Promisify해서 사용해도 되는데요.
+<br>
 
-이것들과 달리 만약 콜백을 여러 번 실행하는 함수들(setInterval, addEventListener 등)인 경우에는 이렇게 Promisify하면 안 됩니다. 왜냐하면 Promise 객체는 한번 pending 상태에서 fulfilled 또는 rejected 상태가 되고나면 그 뒤로는 그 상태와 결과가 바뀌지 않기 때문입니다. 이게 무슨 말인지 다음 코드를 보고 이해해봅시다.
+🙍‍♂️ 전통적인 형식의 비동기 실행 함수라고 해서 모두 Promisify해서 사용해도 되는 것은 아니다. <br>
 
+🙋‍♂️ 기존의 비동기 실행 함수들 중에서도 그 콜백을 **한번만 실행하는 것**들(setTimeout, readFile 등)만 Promisify해서 사용해도 된다. 
+<br>
+
+🙆‍♂️ 콜백을 **여러 번 실행**하는 함수들(setInterval, addEventListener 등)인 경우에는 이렇게 Promisify하면 안된다.  <br>
+
+
+
+```js
 const box = document.getElementById('test');
 let count = 0;
 
-function addEventListener_promisified(obj, eventName) { // 이런 Promisify는 하지 마세요
+function addEventListener_promisified(obj, eventName) { 
   const p = new Promise((resolve, reject) => {
     obj.addEventListener(eventName, () => { // addEventListener 메소드
       count += 1;
@@ -212,80 +159,67 @@ function addEventListener_promisified(obj, eventName) { // 이런 Promisify는 �
 }
 
 addEventListener_promisified(box, 'click').then((eventCount) => { console.log(eventCount); });
-이 코드에서 보이는 addEventListener_promisified 함수는 DOM 객체의 addEventListener 메소드를 Promisify한 함수인데요.
+```
 
-지금 Promise 객체가 생성될 때 실행되는 executor 함수 안에서는, DOM 객체에 어떤 이벤트가 발생할 때, 실행할 콜백을 등록하고 있습니다. 
-특정 이벤트가 발생할 때마다 count라고 하는 변수의 값을 1씩 늘려서 resolve 함수의 파라미터로 전달해서 실행하도록 하는 내용이 들어있는데요.
+<br>
 
-마지막 코드를 보면,
-
-addEventListener_promisified(box, 'click')
-  .then((eventCount) => { console.log(eventCount); });
-이렇게 addEventListener_promisified 함수의 아규먼트로 DOM 객체 box와 문자열 'click'을 넣어서 box 객체가 클릭 이벤트에 반응하도록 했습니다. 
-(HTML 코드는 생략된 상태입니다.)
+이 코드에서 보이는 addEventListener_promisified 함수는 DOM 객체의 addEventListener 메소드를 Promisify한 함수이다. <br>
+ 
+지금 Promise 객체가 생성될 때 실행되는 executor 함수 안에서는, DOM 객체에 어떤 이벤트가 발생할 때, 실행할 콜백을 등록하고 있다. <br>
 
 하지만 이 코드를 실행하고 box를 클릭해보면 
-처음에 1이 딱 출력되고 나서 그 다음 count 값들은 출력되지 않습니다.
-
-왜냐하면 pending 상태에 있던 Promise 객체(여기서는 p 객체)가 한번 fulfilled 상태 또는 rejected 상태가 되고 나면 
-Promise 객체의 상태 및 결과가 고정되어 그 뒤로는 바뀌지 않기 때문입니다.
-
-따라서 지금 위 코드에 보이는 resolve(count)라고 하는 코드가 box 버튼을 클릭할 때마다 여러 번 실행된다고 해도 p 객체가 갖고 있는 상태와 결과는 변하지 않습니다. 그래서 then 메소드 안의 콜백도 처음 클릭했을 때 딱 한번 실행되고 끝인 겁니다.
-
-이렇게 콜백이 여러 번 실행되어야하는 비동기 실행 함수인 경우에는 Promisify를 하면 안 됩니다. Promisify를 하고 싶은 경우라도, 콜백이 딱 한 번 실행되는 함수인 경우에만 해야한다는 사실, 잘 기억하세요!
+처음에 1이 딱 출력되고 나서 그 다음 count 값들은 출력되지 않는다. <br>
+<br>
 
 
+**🙎‍♂️ 왜냐하면 Promise 객체는 한번 pending 상태에서 fulfilled 또는 rejected 상태가 되고나면 그 뒤로는 그 상태와 결과가 바뀌지 않기 때문!!!** <br>
+
+따라서 지금 위 코드에 보이는 resolve(count)라고 하는 코드가 box 버튼을 클릭할 때마다 여러 번 실행된다고 해도 p 객체가 갖고 있는 상태와 결과는 변하지 않는다.  <br>
+
+그래서 then 메소드 안의 콜백도 처음 클릭했을 때 딱 한번 실행되고 끝인 것! <br>
+<br>
+
+**결론 : 이렇게 콜백이 여러 번 실행되어야하는 비동기 실행 함수인 경우에는 Promisify를 하면 안 된다.**
 
 
+## Stated Promise Object👨‍❤️‍👨
 
-
-
-
-
-
-
-
-이때까지 우리는 pending 상태에 있다가 fulfilled 상태 또는 rejected 상태가 되는 Promise 객체를 직접 만드는 법을 배웠습니다. 그런데 아예 처음부터 바로 fulfilled 상태이거나 rejected 상태인 Promise 객체를 만드는 것도 가능한데요. 어떻게 할 수 있는지 살펴봅시다.
-
-1. 이미 상태가 결정된 Promise 객체 만들기
-(1) fulfilled 상태의 Promise 객체 만들기
+**1. fulfilled 상태의 Promise 객체 만들기**
+```js
 const p = Promise.resolve('success');
-Promise의 resolve라는 메소드를 사용하면 바로 fulfilled 상태의 Promise 객체를 만들 수 있습니다. 위와 같이 쓰면 fulfilled 상태이면서, 작업 성공 결과로 문자열 'success'를 가진 Promise 객체를 만들 수 있습니다.
+// state = fulfilled / value = 'success'
+```
+Promise의 resolve라는 메소드를 사용하면 바로 fulfilled 상태의 Promise 객체를 만들 수 있다. 
 
-(2) rejected 상태의 Promise 객체 만들기
+<br>
+
+
+**2. rejected 상태의 Promise 객체 만들기**
+```js
 const p = Promise.reject(new Error('fail'));
-Promise의 reject라는 메소드를 사용하면 바로 rejected 상태의 Promise 객체를 만들 수 있습니다. 위와 같이 쓰면 rejected 상태이면서, 작업 실패 정보로, fail이라는 메시지를 가진 Error 객체를 가진 Promise 객체를 만들 수 있습니다.
+// state = rejected / value = 'fail'
+```
+Promise의 reject라는 메소드를 사용하면 바로 rejected 상태의 Promise 객체를 만들 수 있다. 
 
-Promise 객체를 직접 생성하는 방법에는 이전에 배웠던 것처럼
+<br>
 
-const p = new Promise((resolve, reject) => {
 
-});
-new 생성자와 executor 함수를 사용하는 것 말고도 resolve 메소드나, reject 메소드를 사용하는 방법도 있다는 사실을 기억하셔야 합니다. 
-resolve 메소드나 reject 메소드로 생성한 Promise 객체도 이때까지 우리가 배운 것과 동일하게 작동합니다.
+> **위 두 방식은**
+> ```js
+>const p = new Promise((resolve, reject) => {
+>
+>});
+>```
+>**와 동일하게 동작한다.**
+>
+>어떤 비동기 작업을 처리할 필요가 있다면, new 생성자와 executor 함수를 사용해서 Promise 객체를 만들어야 하지만, 그렇지 않고 **바로 상태가 이미 결정된 Promise 객체를 만들고 싶을 때는 이 resolve 또는 reject 메소드를 사용**
 
-const p = Promise.resolve('success');
-p.then((result) => { console.log(result); }, (error) => { console.log(error); });
-이 코드에서는 첫 번째 콜백이 실행되어서 작업 성공 결과인 문자열 success가 출력되고
 
-const p = Promise.reject(new Error('fail'));
-p.then((result) => { console.log(result); }, (error) => { console.log(error); });
-이 코드에서는 두 번째 콜백이 실행되어서 작업 실패 정보인 Error 객체의 내용이 출력되겠죠?
+<br>
 
-어떤 비동기 작업을 처리할 필요가 있다면, new 생성자와 executor 함수를 사용해서 Promise 객체를 만들어야 하지만, 그렇지 않고 바로 상태가 이미 결정된 Promise 객체를 만들고 싶을 때는 이 resolve 또는 reject 메소드를 사용합니다.
+예를 들어 문제가 발생하는 경우에는 바로 Error 객체를 throw하는데, 만약 문제가 존재하는 경우에도 Promise 객체를 리턴하고 싶다면 reject 메소드를 써서 작성하면 된다.
 
-구체적으로 예를 들자면, 함수 안에서 리턴하는 값이 여러 개인 경우 모든 리턴값을 Promise 객체로 통일하고 싶을 때, 종종 resolve 또는 reject 메소드를 쓰는데요. 예를 들어,
-
-function doSomething(a, b) {
-    //~~
-  if (problem) {
-    throw new Error('Failed due to..'));
-  } else {
-    return fetch('https://~');
-  }
-}
-이렇게 문제(problem이 falsy인 경우)가 없는 경우에만 fetch 함수를 호출해서 Promise 객체를 리턴하는 함수가 있다고 해봅시다. 만약 문제가 발생하는 경우에는 바로 Error 객체를 throw해 버리고 있죠? 만약 문제가 존재하는 경우에도 Promise 객체를 리턴하고 싶다면 reject 메소드를 써서 이렇게 작성할 수 있습니다.
-
+```js
 function doSomething(a, b) {
   // ~~
   if (problem) {
@@ -294,22 +228,15 @@ function doSomething(a, b) {
     return fetch('https://~');
   }
 }
-지금 문제가 있는 경우에도 에러를 바로 throw하는 게 아니라, 생성한 에러를 Promise 객체의 작업 실패 정보로 설정해서, 그 Promise 객체를 리턴하는 것으로 바꿔줬죠? 만약 어떤 함수가 어떤 상황이든 항상 Promise 객체를 리턴하는 것으로 통일하고 싶은 경우에는 resolve나 reject 메소드를 유용하게 사용할 수 있습니다.
+```
+<br>
 
-2. Promise 객체의 작업 성공 결과 또는 작업 실패 정보
-간혹 Promise 객체를 공부하는 분들 중에, Promise 객체가 pending 상태일 때 미리 then 메소드가 붙어있어야만 나중에 이 Promise 객체가 fulfilled 상태 또는 rejected 상태가 되었을 때 그 결과(작업 성공 결과 또는 작업 실패 정보)를 콜백의 파라미터로 받을 수 있고, 이미 fulfilled 상태 또는 rejected 상태가 된 Promise 객체의 경우에는 then 메소드를 붙여도 그 결과를 콜백에서 받지 못한다고 오해하는 분들이 있습니다.
+## Promise Result👀
 
-하지만 방금 resolve, reject 메소드에서도 봤듯이 이미 fulfilled 또는 rejected 상태가 결정된 Promise 객체라도 then 메소드를 붙이면, 콜백에서 해당 작업 성공 결과 또는 작업 실패 정보를 받아올 수 있습니다. 시점과는 전혀 상관이 없는 개념인 겁니다.
+Promise의 result는 pending 상태일 때 then이 붙어있어야 call back의 parameter로 전달 받을 수 있는 것이 아니라 **이미 stated 된 객체의 경우에도 그 결과를 then 메소드로 result를 받아올 수 있다.**<br>
 
-Promise 객체의 상태가 fulfilled 또는 rejected 상태이기만 하면, 어느 시점이든, 몇 번이든 then 메소드를 붙여서 해당 결과를 가져올 수 있습니다. 예를 들어,
+즉, fulfilled 또는 rejected 상태가 결정된 Promise 객체라도 then 메소드를 붙이면, 콜백에서 해당 작업 성공 결과 또는 작업 실패 정보를 받아올 수 있다. **시점과는 전혀 상관이 없는 개념!!** <br>
 
-const p = new Promise((resolve, reject) => {
-  setTimeout(() => { resolve('success'); }, 2000); // 2초 후에 fulfilled 상태가 됨
-});
+<br>
 
-p.then((result) => { console.log(result); }); // Promise 객체가 pending 상태일 때 콜백 등록
-setTimeout(() => { p.then((result) => { console.log(result); }); }, 5000); // Promise 객체가 fulfilled 상태가 되고 나서 콜백 등록 
-이 코드를 실행하면 Promise가 pending 상태일 때 등록한 콜백이든, fulfilled 상태가 된 후에 등록한 콜백이든 잘 실행되는 것을 알 수 있습니다.
-이렇게 어느 시점이든, 몇 번의 then 메소드를 붙이든 상관없이, pending 상태만 아니라면 항상 then 메소드로 Promise 객체의 결과를 추출할 수 있습니다.
-
-Promise 객체는 항상 결과를 줄 수 있는 공급자(Provider)이고 그것의 then 메소드는 그 결과를 소비하는 콜백인 소비자(Consumer)를 설정하는 메소드라는 사실을 잘 기억하셔야 합니다. 시점과는 전혀 연관이 없으니까 오해하지 마세요!
+**🙍‍♂️ `Promise 객체`는 항상 결과를 줄 수 있는 `공급자(Provider)`이고 그것의 `then 메소드`는 그 결과를 소비하는 콜백인 `소비자(Consumer)를 설정하는 메소드`이다.**
