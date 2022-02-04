@@ -29,7 +29,7 @@ Promise
 <br>
 
 🙆‍♂️ 즉, all 메소드는 하나의 promise 객체라도 rejected가 되면 전체가 실패한 것으로 간주하는 작업에서 사용한다.
-
+ 
 <br>
 
 💁‍♂️ 만일 rejected 상태를 대비하려면 catch 메소드를 붙여주면 된다.
