@@ -52,6 +52,7 @@ console.log(6);
 
 🙎‍♂️ fetchAndPrint 함수는 선언방식만 보면 동기 함수와 동일하다.
 <br>
+
 🙋‍♂️ 이는 Promise 객체를 사용하는 **``Promise Chaining``** 을 가독성있게 작성하기 위해 도입된 문법이다.
 <br>
 
@@ -103,10 +104,10 @@ console.log(6);
 
 🙋‍♂️ **이외의 값을 리턴** : fulfilled 상태이면서 리턴된 값을 작업 성공 결과로 가지는 Promise 객체를 리턴<br>
 
-**2. 아무 값도 리턴하지 않은 경우** 
+**2. 아무 값도 리턴하지 않은 경우** <br>
 🙎‍♂️ fulfilled 상태이면서 undefined 값을 작업 성공 결과로 가지는 Promise 객체를 리턴<br>
 
-**3. async 함수 내부에서 에러가 발생했을 때**
+**3. async 함수 내부에서 에러가 발생했을 때** <br>
 🙎‍♂️ rejected 상태이면서 해당 에러 객체를 작업 실패 결과로 가지는 Promise 객체 리턴<br>
 
 ## async Keyword Position
