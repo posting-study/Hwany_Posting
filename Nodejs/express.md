@@ -1,5 +1,7 @@
-🙍‍♂️🙋‍♂️🙆‍♂️💁‍♂️🤷‍♂️🙅‍♂️🤦‍♂️
 # Express 
+
+[혼자 공부하면서 정리한 글](https://github.com/lopahn2/nodeJS_Study/tree/main/report)
+
 저번에 정리했던 Express 글에서 좀 더 살을 붙이고 내용을 보충한 정리글! <br>
 공부를 하면 할 수록 정리할 내용이 늘어난다! <br>
 
