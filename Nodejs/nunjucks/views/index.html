@@ -1,0 +1,29 @@
+<h1>{{title}}</h1>
+<p>Hello Nunjucks!</p>
+
+
+{% set node = 'Node.js' %}
+{% set js = 'JavaScript' %}
+<p>{{node}} and {{js}}</p>
+<!-- nunjucks 에서 변수는 {% set variable_name = value %} 로 선언한다-->
+
+<p>{{'<strong>escape</strong>'}}</p>
+<p>{{'<strong>escape</strong>' | safe}}</p>
+<!-- 이스케이프를 원하지 않는다면 변수 | safe 설정 -->
+
+<h1>반복문</h1>
+<ul>
+	{% set fruits = ['a', 'b', 'c', 'd'] %}
+	{% for item in fruits %}
+	<li>{{loop.index}} 번째 {{item}}</li>
+	{% endfor %}
+</ul>
+
+<h1>조건문</h1>
+{% if isLoggedIn === true %}
+<div>Login status</div>
+
+{% elif isLoggedIn === false %}
+<div>Logout status</div>
+
+{% endif %}
