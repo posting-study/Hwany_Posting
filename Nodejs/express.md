@@ -332,8 +332,157 @@ app.use( (req, res, next) => {
  }
 });
 ```
-그런데 morgan 뒤에 (req, res, next) 는 왜 붙이는 걸까..? 뭐라 검색을 해야할까...고민중이다.
-(20220502)
+그런데 morgan 뒤에 (req, res, next) 는 왜 붙이는 걸까..? 뭐라 검색을 해야할까...고민중이다. <br>
+2022-05-03 현재의 생각 <br>
+morgan('dev')의 리턴 값에 함수가 있는데 그 함수에 req, res next 파라미터를 넘겨주어야 한다거나... <br>
+분기 처리를 함으로써 넘어오는 req, res, next 파라미터가 자동으로 넘어가지 않아 수동적으로 붙여주었다던가... (이게 더 그럴 듯 한거같은데?) <br>
+
+---
+
+#### 🤦‍♂️ multer
+
+이미지, 동영상 등의 멀티파트 데이터들을 업로드할 때 사용하는 미들웨어이다.
+```
+npm i multer
+```
+
+```js
+
+// 폴더가 없는 경우를 생각
+const fs = require('fs');
+try {
+  fs.readdirSync('upload');
+} catch(err) {
+  fs.mkdirSync('upload');
+}
+
+const upload = multer({
+  storage : multer.diskStorage({
+    destination(req, file, done) { 
+      done(null, 'upload/'); 
+      // 어디에 저장할 지
+    },
+    filename(req, file, done){
+      const ext = path.extname(file.originalname);
+      done(null, path.basename(file.originalname,ext) + Data.now() + ext); \
+      // 어느 이름으로 저장할 지
+    }
+  }),
+  limits : {fileSize : 10000}
+});
+```
+<br>
+
+> done(에러 객체, 파일경로 자리 | 파일명 자리)
+
+<br>
+
+
+**1. 파일을 하나만 업로드할 때**
+
+```html
+<form action='/upload' method='post' enctype='multipart/form-data'>
+  <input type='file' name="image">
+</form>
+```
+
+```js
+app.post('/upload', upload.single('image'), (req, res) => {
+  console.log(req.file, req.body);
+});
+```
+
+upload 객체는 multer의 설정이 끝나면 생성되며 input tage의 name이나 폼데이터의 키와 일치한다. <br>
+multer의 설정에 따라 req.file 객체가 생성된다.
+<br>
+
+**2. 파일을 여러 개 업로드할 때**
+```html
+<form action='/upload' method='post' enctype='multipart/form-data'>
+  <input type='file' name="image" multiple>
+</form>
+```
+
+```js
+app.post('/upload', upload.array('image'), (req, res) => {
+  console.log(req.files, req.body);
+});
+```
+
+<br>
+
+**3. 파일이 여러 개고 input도 여러개일 때**
+
+```html
+<form action='/upload' method='post' enctype='multipart/form-data'>
+  <input type='file' name="image1" >
+  <input type='file' name="image2" >
+  <input type='file' name="image3" >
+</form>
+```
+
+```js
+app.post('/upload', upload.fields([{name:'image1'}, {name:'image2'}, {name:'image3'}]), (req, res) => {
+  console.log(req.files, req.body);
+});
+```
+
+<br>
+
+**4. 파일을 업로드하지는 않지만 멀티파트 형식으로 업로드 할 때**
+```js
+app.post('/upload', upload.none(), (req, res) => {
+  console.log(req.body);
+});
+```
+
+<br>
+
+**정리**
+|method|image info  |other info|
+|--|--|--|
+| **single** | req.file | req.body|
+| **array** | req.files | req.body|
+| **fields**| req.files | req.body|
+| **none**| none| req.body|
+
+---
+
+#### 🧚‍♂️ Router 객체로 라우터 분리
+main.js 혹은 app.js의 메인 실행 파일의 복잡도를 최대한 줄이기 위해서 사용한다.
+
+```js
+// router/index.js
+const express = require('express');
+const router = express.Router();
+
+router.get('/', (req, res) => {
+  ~~~
+});
+
+module.exports = router;
+
+// app.js
+const express = require('express');
+const app = express();
+
+const indexRouter = require('./router');
+// index.js의 파일명은 생략가능하다
+app.use('/', indexRouter);
+```
+
+**시멘틱 URL 사용시 주의사항**
+시멘틱 URL을 사용하는 라우터를 가장 뒤에 놓아야 한다.
+
+```js
+router.get('/user/:id', (req, res) => {
+  console.log('얘만 실행된다.');
+});
+
+router.get('/user/like', (req, res) => {
+  console.log('영원히 실행되지 않는다.');
+});
+```
 
 
 
