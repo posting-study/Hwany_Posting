@@ -371,3 +371,188 @@ db.sequelize.models.PostHashtag
 1. `Hashtag` 모델에서 조회할 id를 찾는다.
 2. 찾은 id로 `PostHashtag` 에서 대응되는 Post id를 찾는다.
 3. 찾은 id로 `Post 모델`에서 해당되는 게시글들을 찾는다.
+
+## Seqeulize query
+
+쿼리는 프로미스 객체를 반환한다. then 메소드를 사용할 수도 있지만 async, await 문법을 사용하자.
+
+**1. Insert**
+```sql
+INSERT INTO nodejs.users (name, age, married, comment) VALUES ('zero', 24, 0, 'introduce');
+```
+
+```js
+const { User } = require('../models');
+User.create({
+  name : 'zero',
+  age : 24,
+  married : false,
+  comment : 'introduce'
+});
+```
+
+시퀄라이즈에 데이터를 넣을 땐 시퀄라이즈 자료형을 사용해야 한다. 
+MySQL 자료형을 넣으면 에러가 발생한다.
+
+**2. Select All/One**
+```sql
+SELECT * FROM nodejs.users;
+SELECT * FROM nodejs.users LIMIT 1;
+```
+
+```JS
+User.findAll({});
+User.findOne({});
+```
+
+데이터를 하나만 가져오려면 `findOne` , 모두가져오려면 `findAll` 을 사용하면 된다.
+
+**3. Select Some Columns**
+
+- `attribute` : 원하는 컬럼만 가져오기 
+```sql
+SELECT name, married FROM nodejs.users;
+```
+```js
+User.findAll({
+  attribute : ['name', 'married']
+});
+```
+
+- `where` : 쿼리문에 조건달기
+```sql
+SELECT name, age FROM nodejs.users WHERE married = 1 AND age > 30;
+```
+```js
+const { Op } = require('sequelize');
+const { User } = require('../models')
+
+User.findAll({
+  attribute : ['name', 'age'],
+  where : {
+   married : true,
+   age : {[Op.gt] : 30}  
+ }
+})
+```
+
+시퀄라이즈는 ORM이기 때문에 Op.gt같은 연산이 사용된다. 
+greater than의 의미로 Op.lt, Op.lte ... 등 사용된다.
+```sql
+SELECT name, age FROM nodejs.users WHERE married = 1 OR age > 30;
+```
+```js
+const { Op } = require('sequelize');
+const { User } = require('../models')
+
+User.findAll({
+  attribute : ['name', 'age'],
+  where : {
+   [Op.or] : [{married : true}, { age : {[Op.gt] : 30} }  ]
+ }
+});
+```
+
+- `order`  : 로우를 기준을 가지고 정렬
+```sql
+SELECT id, name FROM users ORDER BY age DESC LIMIT 1 OFFSET 1;
+```
+
+```JS
+User.findAll({
+  attribute : ['id', 'name'],
+  order : [['age', 'DESC']],
+  limit : 1,
+  offset : 1
+});
+```
+
+order 가 nested list인 이유는 정렬의 조건이 여러개 있을 수 있기 때문!
+
+**4. Update and Delete**
+```sql
+UPDATE nodejs.users SET commet = "바꿀 내용" WHERE id = 2;
+```
+```js
+User.update({
+  comment : "바꿀 내용",
+}, {
+  where : {id:2}
+});
+```
+
+```sql
+DELETE FROM nodejs.users WHERE id = 2;
+```
+```js
+User.destroy({
+  where : {id : 2}
+});
+```
+
+## Seqeulize Relation query
+
+User와 Comment 모델이 hasMany = belongsTo 관계이기 때문에  <br>
+`include` 속성을 이용해 Join 할 수 있다.
+
+```js
+const user = await User.findOne({
+  include : [{
+    model : Comment
+  }]
+});
+
+console.log(user.Comments)
+```
+
+관계를 설정했다면 댓글을 user의 메서드를 사용해서 가져올 수 있다.
+
+```js
+const user = await User.findOne({});
+const comments = await User.getComments();
+console.log(comments);
+```
+
+위 아래의 콘솔에 찍히는 내용은 동일하다. <br>
+
+관계를 설정했다면 `getComments` 외에도 `setComments`, `addComment`, `addComments`, `removeComments` 등이 가능하다.
+
+동사 뒤에 모델이름을 바꾸고 싶다면 관계 설정시 as 옵션을 통해 변경할 수 있다.
+
+```js
+// associate
+db.User.hasMany(db.Comment, { foreignKey : 'commenter', sourceKey : 'id', as : 'Answer'});
+
+// query
+const user = await User.findOne({});
+const comments = user.getAnswers();
+```
+
+관계 query method에도 where, attribute 등을 사용할 수 있다.
+```
+댓글을 가져올 땐 id가 1인 댓글만 가져오고 컬럼도 id 컬럼만 가져와라
+```
+```js
+const user = await user.findOne({
+  include : [{
+    model : Comment,
+    where : {
+      id : 1,
+    },
+    attributes : ['id']
+  }]
+});
+
+// or
+
+const comments = await user.getComments({
+  where : {id : 1},
+  attributes : ['id']
+})
+```
+
+## MySql 문을 사용하고 싶을 때
+```js
+const [result, metadata] = await sequelize.query('SELECT * FROM comments');
+console.log(result);
+```
