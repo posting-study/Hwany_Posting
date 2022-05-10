@@ -1,3 +1,4 @@
+
 # Passport
 회원가입과 로그인을 직접 구현할 수 있지만 보안의 문제, 세션과 쿠키등 복잡한 사항이 많으므로 검증된 모듈을 사용하는 것이 좋다! <br>
 
@@ -89,3 +90,122 @@ module.exports = () => {
 
 ![enter image description here](https://user-images.githubusercontent.com/76484900/167432641-4da3893c-c67a-4d7e-9b2c-91acc89bfb3b.png)
 
+### 로컬 로그인 구현
+로그인을 구현하려면 로그인, 로그아웃, 회원가입 라우터를 만들어야 한다.
+이때 Passport는 로그인 전략만 실행한다!
+
+먼저 사용자의 상태에 따라 접근 가능한 라우터를 제한해야 한다.
+
+passport가 req 객체에 심어놓는 `isAuthenticated` 메소드를 사용하자.
+로그인 한 상태면 req.isAuthenticated() 는 true를 리턴하고 아니면 false를 리턴한다.
+
+**`routes/middlewares.js`**
+```js
+exports.isLoggedIn = (res, req, next) => {
+  if(isAuthenticated()) {
+    next();
+  } else {
+    res.status(403).send('You need to login');
+  }
+}
+
+exports.isNotLoggedIn = (res, req, next) => {
+  if(!isAuthenticated()) {
+    next();
+  } else {
+    const message = encodedURIComponent('You already log in status')
+    res.redirect(`/?error=${message}`);
+  }
+}
+```
+
+이 미들웨어를 route의 page에 부착해주자.
+
+**`routes/page.js`**
+```js
+const express = require('express');
+const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
+
+const router = express.Router();
+...
+...
+router.get('/profile',isLoggedIn ,(req, res) => {
+	res.render('profile', { title : '내 정보 - Node-Bird' });
+});
+
+router.get('/join',isNotLoggedIn, (req, res) => {
+	res.render('join', {title : '회원가입'});
+});
+
+...
+```
+이런 논리로 팔로우 여부, 관리자 여부등의 미들웨어를 만들 수도 있으므로 참고하자!
+
+로그인, 로그아웃, 회원가입은 인증의 기능 안에 있으므로 라우터를 따로 분리하자.
+
+**`routes/auth.js`**
+```js
+const express = require('express');
+const passport = require('passport');
+const bcrypt = require('bcrypt');
+const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
+const User = require('../models/user');
+
+const router = express.Router();
+
+router.post('/join', isNotLoggedIn, async (req, res, next) => {
+  const { email, nick, password } = req.body;
+  try {
+    const exUser = await User.findOne({ where: { email } });
+    if (exUser) {
+      return res.redirect('/join?error=exist');
+    }
+    const hash = await bcrypt.hash(password, 12);
+    await User.create({
+      email,
+      nick,
+      password: hash,
+    });
+    return res.redirect('/');
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+});
+
+router.post('/login', isNotLoggedIn, (req, res, next) => {
+  passport.authenticate('local', (authError, user, info) => {
+    if (authError) {
+      console.error(authError);
+      return next(authError);
+    }
+    if (!user) {
+      return res.redirect(`/?loginError=${info.message}`);
+    }
+    return req.login(user, (loginError) => {
+      if (loginError) {
+        console.error(loginError);
+        return next(loginError);
+      }
+      return res.redirect('/');
+    });
+  })(req, res, next); // 미들웨어 내의 미들웨어에는 (req, res, next)를 붙입니다.
+});
+
+router.get('/logout', isLoggedIn, (req, res) => {
+  req.logout();
+  req.session.destroy();
+  res.redirect('/');
+});
+
+
+module.exports = router;
+```
+
+로그인 라우터가 중요한데, 로그인 요청이 들어오면 passport.authenticate('local') 미들웨어가 로그인 전략을 수행한다. 
+
+로그인 전략이 실패시 첫 번째 매개변수에 값이 들어가고 성공시 두 번째 매개변수에 값이 들어간다.
+
+성공 후 req.login 메서드를 호출하고 req.login 메서드는 passport.serializeUser를 호출한다. 
+
+req.login에서 제공하는 user 객체가 serializeUser로 넘어간다
