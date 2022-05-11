@@ -1,4 +1,3 @@
-
 # Passport
 회원가입과 로그인을 직접 구현할 수 있지만 보안의 문제, 세션과 쿠키등 복잡한 사항이 많으므로 검증된 모듈을 사용하는 것이 좋다! <br>
 
@@ -97,26 +96,27 @@ module.exports = () => {
 먼저 사용자의 상태에 따라 접근 가능한 라우터를 제한해야 한다.
 
 passport가 req 객체에 심어놓는 `isAuthenticated` 메소드를 사용하자.
-로그인 한 상태면 req.isAuthenticated() 는 true를 리턴하고 아니면 false를 리턴한다.
+로그인 한 상태면 `req.isAuthenticated()` 는 true를 리턴하고 아니면 false를 리턴한다.
 
 **`routes/middlewares.js`**
 ```js
-exports.isLoggedIn = (res, req, next) => {
-  if(isAuthenticated()) {
+exports.isLoggedIn = (req, res, next) => {
+  if (req.isAuthenticated()) {
     next();
   } else {
-    res.status(403).send('You need to login');
+    res.status(403).send('로그인 필요');
   }
-}
+};
 
-exports.isNotLoggedIn = (res, req, next) => {
-  if(!isAuthenticated()) {
+exports.isNotLoggedIn = (req, res, next) => {
+  if (!req.isAuthenticated()) {
     next();
   } else {
-    const message = encodedURIComponent('You already log in status')
+    const message = encodeURIComponent('로그인한 상태입니다.');
     res.redirect(`/?error=${message}`);
   }
-}
+};
+
 ```
 
 이 미들웨어를 route의 page에 부착해주자.
@@ -139,9 +139,9 @@ router.get('/join',isNotLoggedIn, (req, res) => {
 
 ...
 ```
-이런 논리로 팔로우 여부, 관리자 여부등의 미들웨어를 만들 수도 있으므로 참고하자!
+이런 논리로 팔로우 여부, 관리자 여부등의 미들웨어를 만들 수도 있으므로 참고하자! <br>
 
-로그인, 로그아웃, 회원가입은 인증의 기능 안에 있으므로 라우터를 따로 분리하자.
+로그인, 로그아웃, 회원가입은 인증의 기능 안에 있으므로 라우터를 따로 분리하자. <br>
 
 **`routes/auth.js`**
 ```js
@@ -202,10 +202,25 @@ router.get('/logout', isLoggedIn, (req, res) => {
 module.exports = router;
 ```
 
-로그인 라우터가 중요한데, 로그인 요청이 들어오면 passport.authenticate('local') 미들웨어가 로그인 전략을 수행한다. 
+로그인 라우터가 중요한데, 로그인 요청이 들어오면 passport.authenticate('local') 미들웨어가 로그인 전략을 수행한다. <br>
 
-로그인 전략이 실패시 첫 번째 매개변수에 값이 들어가고 성공시 두 번째 매개변수에 값이 들어간다.
+로그인 전략이 실패시 첫 번째 매개변수에 값이 들어가고 성공시 두 번째 매개변수에 값이 들어간다. <br>
 
-성공 후 req.login 메서드를 호출하고 req.login 메서드는 passport.serializeUser를 호출한다. 
+성공 후 req.login 메서드를 호출하고 req.login 메서드는 passport.serializeUser를 호출한다.  <br>
 
-req.login에서 제공하는 user 객체가 serializeUser로 넘어간다
+req.login에서 제공하는 user 객체가 serializeUser로 넘어간다. <br>
+
+### 로컬 로그인 전략 구현
+
+passport-local 모듈에서 Strategy 생성자를 불러와서 전략을 구현하면 된다. <br>
+
+LocalStrategy 객체 내부에 usernameField 와 passwordField 는 로그인 라우터에서 넘어오는 req.body의 속성명을 적으면 된다. <br>
+
+req.body.email에 이메일 주소가 , req.body.password에 비밀번호가 넘어오기 때문에 아래 코드에서 표현했다. <br>
+
+밑에 async 함수는 객체에서 넘어오는 email 과 password가 파라미터로 들어간다.  <br>
+
+done이 호출된 후에는 다시 passport.authenticate의 콜백함수에서 나머지 로직이 실행된다.  <br>
+( auth.js 'login' 라우터에 위치 )
+
+### auth 라우터 app.js에 연결
