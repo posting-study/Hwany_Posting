@@ -17,7 +17,7 @@ x += dx[0]
 board[y][x] = 2
 # y 축에 해당하는 배열은 outer array 이고, x 축에 해당하는 배열은 inner array이다!!!
 ```
-
+#### 음수 모듈러 A%B (A가 음수) A에 B를 계속 더해서 처음으로 양수가 나올 때 모듈러 연산을 시행
 
 ## ArrayList
 #### 배열의 삽입과 삭제가 번번할 때에는 시간복잡도가 O(n)인 ArrayList를 쓰면 안되고 Stack을 써야한다.
