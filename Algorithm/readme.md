@@ -120,3 +120,6 @@ queue.extendleft('def') # queue >> [f, e, d, a, b, c]
 # deque에 iterable argument(list, str, tuple...)를 분리해서 appendleft 해주는 메서드.
 queue.rotate(n) # queue의 값들을 n 값 만큼 회전시켜주는 메서드. 양수면 오른쪽, 음수면 왼쪽으로 회전
 ```
+
+## global vs nonlocal
+https://www.daleseo.com/python-global-nonlocal/
