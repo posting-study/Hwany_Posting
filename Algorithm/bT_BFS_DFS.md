@@ -105,7 +105,7 @@ bfs(v)
 
 여기서는 중요한 포인트가 있다. <br>
 
-### 연결된 노드를 표현하는 방법 = vertex
+### 연결된 노드를 표현하는 방법 ( 두 노드를 알고, 두 노드가 연결됐는지 알고싶을 때 )
 ```python
 vertex = [[0] * (n+1) for _ in range(n+1)]
 
@@ -115,6 +115,17 @@ for i in range(m):
 ```
 위 매트릭스에서 a, b는 1이고 b, a는 1이다. 이 말은 a 노드와 b 노드가 연결되어 있다는 것! <br>
 방문은 visit list로 해결한다.
+
+### 연결된 노드를 표현하는 방법 ( 하나의 노드를 알고 그 노드와 나머지 다른 임의의 노드가 연결됐는지 알고싶을 때 )
+```python
+vertex = [[] for _ in range(n+1)]
+for a, b in some_link_info:
+    vertex[a].append(b)
+    vertex[b].append(a)
+# a는 어디와 연결돼있나요?
+print(vertex[a]) # b 
+
+```
 
 
 
