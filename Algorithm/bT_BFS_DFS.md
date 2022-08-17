@@ -69,34 +69,38 @@ backTracking 문제와 비슷하다. <br>
 https://www.acmicpc.net/problem/1260
 
 ```python
-from collections import deque
 import sys
-n, m, v = map(int, sys.stdin.readline().split())
+from collections import deque
+input = sys.stdin.readline
+n, m, v = map(int, input().split())
 vertex = [[0] * (n+1) for _ in range(n+1)]
 
-for i in range(m):
-    a, b = map(int,sys.stdin.readline().split())
+for _ in range(m):
+    a, b = map(int, input().split())
     vertex[a][b] = vertex[b][a] = 1
+    
+bvisit = [0] * (n+1)
+dvisit = [0] * (n+1)
 
-visit = [0] * (n+1)
-
-def dfs(v):
-    visit[v] = 1
-    print(v, end = ' ')
+def dfs(V):
+    dvisit[V] = 1
+    print(V, end = ' ')
     for i in range(1, n+1):
-        if visit[i] == 0 and vertex[v][i] == 1:
-        	dfs(i)
-def bfs(v):
-    visit[v] = 0
-    queue = deque()
-    queue.append(v)
-    while queue:
-        t = queue.popleft()
-        print(t, end = ' ')
-        for i in range(1,n+1):
-            if visit[i] == 1 and vertex[t][i] == 1:
-                queue.append(i)
-                visit[i] = 0
+        if vertex[V][i] == 1 and dvisit[i] == 0:
+            dfs(i)
+            
+def bfs(V):
+    q = deque()
+    
+    q.append(V)
+    while q:
+        V = q.popleft()
+        bvisit[V] = 1
+        print(V, end = ' ')
+        for i in range(1, n+1):
+            if bvisit[i] == 0 and vertex[V][i] == 1:
+                q.append(i)
+                bvisit[i] = 1
 dfs(v)
 print()
 bfs(v)
