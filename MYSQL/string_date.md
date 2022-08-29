@@ -14,3 +14,14 @@ WHERE NAME LIKE '%el%' AND ANIMAL_TYPE = "Dog"
 ORDER BY NAME
 ```
 
+## DATETIME
+```SQL
+SELECT ANIMAL_ID, NAME, DATE_FORMAT(DATETIME,'%Y-%m-%d') "날짜"
+FROM ANIMAL_INS
+ORDER BY ANIMAL_ID
+```
+
+--- 
+## DATE TIME
+https://selgii.tistory.com/8
+
